@@ -51,14 +51,14 @@ int main()
     Eigen::BDCSVD<Eigen::MatrixXd> SVD_real;
     SVD_real.setThreshold(1e-10);
     SVD_real.compute(matrix_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_real.singularValues() << std::endl;
+    std::cout << "Singular values from hard coded matrix in source: \n " << SVD_real.singularValues() << std::endl;
 
     
     Eigen::MatrixXcd matrix_cplx = matrix_real.cast<std::complex<double>>();
     Eigen::BDCSVD<Eigen::MatrixXcd> SVD_cplx;
     SVD_cplx.setThreshold(1e-10);
     SVD_cplx.compute(matrix_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_cplx.singularValues() << std::endl;
+    std::cout << "Singular values from hard coded matrix in source, cast to complex<double>: \n " << SVD_real.singularValues() << std::endl;
 
     
     //h5pp::File h5ppFile ("svd_matrix.h5",h5pp::AccessMode::READONLY, h5pp::CreateMode::OPEN,0);
@@ -90,13 +90,14 @@ int main()
     SVD_bin_real.setThreshold(1e-10);
     SVD_bin_real.compute(matrix_bin_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
     std::cout << SVD_bin_real.singularValues() << std::endl;
+    std::cout << "Singular values from matrix in binary file in type double: \n " << SVD_real.singularValues() << std::endl;
 
     
         
     Eigen::BDCSVD<Eigen::MatrixXcd> SVD_bin_cplx;
     SVD_bin_cplx.setThreshold(1e-10);
     SVD_bin_cplx.compute(matrix_bin_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_bin_cplx.singularValues() << std::endl;
+    std::cout << "Singular values from matrix in binary file in type complex<double>: \n " << SVD_real.singularValues() << std::endl;
 
     
     
