@@ -69,6 +69,7 @@ find_path(MKL_ROOT_DIR
         /opt/intel/mkl
         $ENV{BLAS_DIR}
         $ENV{MKL_DIR}
+        $ENV{HOME}/intel/mkl
         $ENV{HOME}/.conda
         $ENV{HOME}/anaconda3
         /usr/lib/x86_64-linux-gnu
