@@ -18,22 +18,23 @@ Eigen::MatrixXd get_matrix();
 
 int main()
 {
-    std::cout << "Launched" << std::endl;
+    auto matrix_real = get_matrix();
+    Eigen::BDCSVD<Eigen::MatrixXd> SVD_real;
+    SVD_real.setThreshold(1e-10);
+    SVD_real.compute(matrix_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    std::cout << SVD_real.singularValues() << std::endl;
+
+
     h5pp::File h5ppFile ("svd_matrix.h5",h5pp::AccessMode::READONLY, h5pp::CreateMode::OPEN,0);
     auto matrix_cplx = h5ppFile.readDataset<Eigen::MatrixXcd>("svd_matrix");
-    auto matrix_real = get_matrix();
-   
     Eigen::BDCSVD<Eigen::MatrixXcd> SVD_cplx;
     SVD_cplx.setThreshold(1e-10);
     SVD_cplx.compute(matrix_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
     std::cout << SVD_cplx.singularValues() << std::endl;
     
-    
-    Eigen::BDCSVD<Eigen::MatrixXd> SVD_real;
-    SVD_real.setThreshold(1e-10);
-    SVD_real.compute(matrix_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_real.singularValues() << std::endl;
     return 0;
+
+
 }
 
 
