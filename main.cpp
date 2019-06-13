@@ -82,22 +82,19 @@ int main()
     //Binary::write("svd_binary_real.bin", matrix_h5pp_real);
     //Binary::write("svd_binary_cplx.bin", matrix_h5pp_cplx);
     Eigen::MatrixXd  matrix_bin_real;
-    Eigen::MatrixXcd matrix_bin_cplx;
     Binary::read("svd_binary_real.bin", matrix_bin_real);
-    Binary::read("svd_binary_cplx.bin", matrix_bin_cplx);
-    
     Eigen::BDCSVD<Eigen::MatrixXcd> SVD_bin_real;
     SVD_bin_real.setThreshold(1e-10);
     SVD_bin_real.compute(matrix_bin_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_bin_real.singularValues() << std::endl;
-    std::cout << "Singular values from matrix in binary file in type double: \n " << SVD_real.singularValues() << std::endl;
+    std::cout << "Singular values from matrix in binary file in type double: \n " << SVD_bin_real.singularValues() << std::endl;
 
     
-        
+    Eigen::MatrixXcd matrix_bin_cplx;
+    Binary::read("svd_binary_cplx.bin", matrix_bin_cplx);
     Eigen::BDCSVD<Eigen::MatrixXcd> SVD_bin_cplx;
     SVD_bin_cplx.setThreshold(1e-10);
     SVD_bin_cplx.compute(matrix_bin_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << "Singular values from matrix in binary file in type complex<double>: \n " << SVD_real.singularValues() << std::endl;
+    std::cout << "Singular values from matrix in binary file in type complex<double>: \n " << SVD_bin_cplx.singularValues() << std::endl;
 
     
     
