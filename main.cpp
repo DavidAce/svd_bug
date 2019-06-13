@@ -5,6 +5,29 @@
 #include <fstream>
 #include <iomanip>
 
+namespace Binary{
+template<typename Derived>
+void write(const char* filename, const Eigen::MatrixBase<Derived> & matrix){
+    std::ofstream out(filename, std::ios::out | std::ios::binary | std::ios::trunc);
+    typename Derived::Index rows=matrix.rows(), cols=matrix.cols();
+    out.write((char*) (&rows), sizeof(typename Derived::Index));
+    out.write((char*) (&cols), sizeof(typename Derived::Index));
+    out.write((char*) matrix.derived().data(), rows*cols*sizeof(typename Derived::Scalar) );
+    out.close();
+}
+template<typename Derived>
+void read(const char* filename, Eigen::MatrixBase<Derived>& matrix){
+    std::ifstream in(filename, std::ios::in | std::ios::binary);
+    typename Derived::Index rows=0, cols=0;
+    in.read((char*) (&rows),sizeof(typename Derived::Index));
+    in.read((char*) (&cols),sizeof(typename Derived::Index));
+    matrix.derived().resize(rows, cols);
+    in.read( (char *) matrix.derived().data() , rows*cols*sizeof(typename Derived::Scalar) );
+    in.close();
+}
+} 
+
+
 const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision,0, ", ", ",\n");
 void writeToCSVfile_real(std::string name, Eigen::MatrixXd matrix)
 {
@@ -23,7 +46,8 @@ Eigen::MatrixXd get_matrix_real();
 
 int main()
 {
-    auto matrix_real = get_matrix_real();
+    std::cout << std::setprecision(18) << std::fixed;
+    Eigen::MatrixXd matrix_real = get_matrix_real();
     Eigen::BDCSVD<Eigen::MatrixXd> SVD_real;
     SVD_real.setThreshold(1e-10);
     SVD_real.compute(matrix_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
@@ -37,12 +61,42 @@ int main()
     std::cout << SVD_cplx.singularValues() << std::endl;
 
     
-    h5pp::File h5ppFile ("svd_matrix.h5",h5pp::AccessMode::READONLY, h5pp::CreateMode::OPEN,0);
-    auto matrix_h5pp = h5ppFile.readDataset<Eigen::MatrixXcd>("svd_matrix");
-    Eigen::BDCSVD<Eigen::MatrixXcd> SVD_h5pp;
-    SVD_h5pp.setThreshold(1e-10);
-    SVD_h5pp.compute(matrix_h5pp, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    std::cout << SVD_h5pp.singularValues() << std::endl;
+    //h5pp::File h5ppFile ("svd_matrix.h5",h5pp::AccessMode::READONLY, h5pp::CreateMode::OPEN,0);
+    //Eigen::MatrixXd matrix_h5pp_real = h5ppFile.readDataset<Eigen::MatrixXcd>("svd_matrix").real();
+    
+    
+    
+    //Eigen::BDCSVD<Eigen::MatrixXcd> SVD_h5pp_real;
+    //SVD_h5pp_real.setThreshold(1e-10);
+    //SVD_h5pp_real.compute(matrix_h5pp_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    //std::cout << SVD_h5pp_real.singularValues() << std::endl;
+
+    
+    //Eigen::MatrixXcd matrix_h5pp_cplx= h5ppFile.readDataset<Eigen::MatrixXcd>("svd_matrix");
+    //Eigen::BDCSVD<Eigen::MatrixXcd> SVD_h5pp_cplx;
+    //SVD_h5pp_cplx.setThreshold(1e-10);
+    //SVD_h5pp_cplx.compute(matrix_h5pp_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    //std::cout << SVD_h5pp_cplx.singularValues() << std::endl;
+
+    
+    //Binary::write("svd_binary_real.bin", matrix_h5pp_real);
+    //Binary::write("svd_binary_cplx.bin", matrix_h5pp_cplx);
+    Eigen::MatrixXd  matrix_bin_real;
+    Eigen::MatrixXcd matrix_bin_cplx;
+    Binary::read("svd_binary_real.bin", matrix_bin_real);
+    Binary::read("svd_binary_cplx.bin", matrix_bin_cplx);
+    
+    Eigen::BDCSVD<Eigen::MatrixXcd> SVD_bin_real;
+    SVD_bin_real.setThreshold(1e-10);
+    SVD_bin_real.compute(matrix_bin_real, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    std::cout << SVD_bin_real.singularValues() << std::endl;
+
+    
+        
+    Eigen::BDCSVD<Eigen::MatrixXcd> SVD_bin_cplx;
+    SVD_bin_cplx.setThreshold(1e-10);
+    SVD_bin_cplx.compute(matrix_bin_cplx, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    std::cout << SVD_bin_cplx.singularValues() << std::endl;
 
     
     
